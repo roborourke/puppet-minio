@@ -35,13 +35,20 @@
 # Copyright 2017 Daniel S. Reichenbach <https://kogitoapp.com>
 #
 class minio::user (
-  Boolean $manage_user   = $minio::manage_user,
-  Boolean $manage_group  = $minio::manage_group,
-  Boolean $manage_home   = $minio::manage_home,
-  String $owner          = $minio::owner,
-  String $group          = $minio::group,
-  Optional[String] $home = $minio::home,
-  ) {
+  $manage_user  = $minio::manage_user,
+  $manage_group = $minio::manage_group,
+  $manage_home  = $minio::manage_home,
+  $owner        = $minio::owner,
+  $group        = $minio::group,
+  $home         = $minio::home,
+) {
+
+  validate_bool($manage_user)
+  validate_bool($manage_group)
+  validate_bool($manage_home)
+  validate_string($owner)
+  validate_string($group)
+  validate_string($home)
 
   if ($manage_home) {
     if $home == undef {

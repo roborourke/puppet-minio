@@ -72,27 +72,48 @@
 # Copyright 2017 Daniel S. Reichenbach <https://kogitoapp.com>
 #
 class minio::install (
-  Enum['present', 'absent'] $package_ensure = $minio::package_ensure,
-  String $owner                   = $minio::owner,
-  String $group                   = $minio::group,
+  $package_ensure          = $minio::package_ensure,
+  $owner                   = $minio::owner,
+  $group                   = $minio::group,
 
-  String $base_url                = $minio::base_url,
-  String $version                 = $minio::version,
-  String $checksum                = $minio::checksum,
-  String $checksum_type           = $minio::checksum_type,
-  String $configuration_directory = $minio::configuration_directory,
-  String $installation_directory  = $minio::installation_directory,
-  String $storage_root            = $minio::storage_root,
-  String $log_directory           = $minio::log_directory,
-  String $listen_ip               = $minio::listen_ip,
-  Integer $listen_port            = $minio::listen_port,
+  $base_url                = $minio::base_url,
+  $version                 = $minio::version,
+  $checksum                = $minio::checksum,
+  $checksum_type           = $minio::checksum_type,
+  $configuration_directory = $minio::configuration_directory,
+  $installation_directory  = $minio::installation_directory,
+  $storage_root            = $minio::storage_root,
+  $log_directory           = $minio::log_directory,
+  $listen_ip               = $minio::listen_ip,
+  $listen_port             = $minio::listen_port,
 
-  Boolean $manage_service         = $minio::manage_service,
-  String $service_template        = $minio::service_template,
-  String $service_path            = $minio::service_path,
-  String $service_provider        = $minio::service_provider,
-  String $service_mode            = $minio::service_mode,
-  ) {
+  $manage_service          = $minio::manage_service,
+  $service_template        = $minio::service_template,
+  $service_path            = $minio::service_path,
+  $service_provider        = $minio::service_provider,
+  $service_mode            = $minio::service_mode,
+) {
+
+  validate_string($package_ensure)
+  validate_string($owner)
+  validate_string($group)
+
+  validate_string($base_url)
+  validate_string($version)
+  validate_string($checksum)
+  validate_string($checksum_type)
+  validate_string($configuration_directory)
+  validate_string($installation_directory)
+  validate_string($storage_root)
+  validate_string($log_directory)
+  validate_string($listen_ip)
+  validate_integer($listen_port)
+
+  validate_bool($manage_service)
+  validate_string($service_template)
+  validate_string($service_path)
+  validate_string($service_provider)
+  validate_string($service_mode)
 
   file { $storage_root:
     ensure => 'directory',
@@ -123,7 +144,7 @@ class minio::install (
   }
 
   if ($package_ensure) {
-    $kernel_down=downcase($::kernel)
+    $kernel_down = downcase($::kernel)
 
     case $::architecture {
       /(x86_64)/: {
@@ -137,7 +158,7 @@ class minio::install (
       }
     }
 
-    $source_url="${base_url}/${kernel_down}-${arch}/archive/minio.${version}"
+    $source_url = "${base_url}/${kernel_down}-${arch}/archive/minio.${version}"
 
     remote_file { 'minio':
       ensure        => $package_ensure,

@@ -93,34 +93,72 @@
 # Copyright 2017 Daniel S. Reichenbach <https://kogitoapp.com>
 #
 class minio (
-  Enum['present', 'absent'] $package_ensure,
+  $package_ensure = 'present',
 
-  Boolean $manage_user,
-  Boolean $manage_group,
-  Boolean $manage_home,
-  String $owner,
-  String $group,
-  Optional[String] $home,
+  $manage_user = true,
+  $manage_group = true,
+  $manage_home = true,
+  $owner = 'minio',
+  $group = 'minio',
+  $home = '/home/minio',
 
-  String $base_url,
-  String $version,
-  String $checksum,
-  String $checksum_type,
-  String $configuration_directory,
-  String $installation_directory,
-  String $storage_root,
-  String $log_directory,
-  String $listen_ip,
-  Integer $listen_port,
+  $base_url = 'https://dl.minio.io/server/minio/release',
+  $version = 'RELEASE.2017-09-29T19-16-56Z',
+  $checksum = 'b7707b11c64e04be87b4cf723cca5e776b7ed3737c0d6b16b8a3d72c8b183135',
+  $checksum_type = 'sha256',
+  $configuration_directory = '/etc/minio',
+  $installation_directory = '/opt/minio',
+  $storage_root = '/var/minio',
+  $log_directory = '/var/log/minio',
+  $listen_ip = '127.0.0.1',
+  $listen_port = 9000,
 
-  Hash $configuration,
+  $configuration = {
+    'version' => '19',
+    'credential' => {
+      'accessKey' => 'ADMIN',
+      'secretKey' => 'PASSWORD',
+    },
+    'region'     => 'us-east-1',
+    'browser'    => 'on',
+  },
 
-  Boolean $manage_service,
-  String $service_template,
-  String $service_path,
-  String $service_provider,
-  String $service_mode,
+  $manage_service = true,
+  $service_template = 'minio/systemd.erb',
+  $service_path = '/lib/systemd/system/minio.service',
+  $service_provider = 'systemd',
+  $service_mode = '0644',
   ) {
+
+  validate_string($package_ensure)
+  
+  validate_bool($manage_user)
+  validate_bool($manage_group)
+  validate_bool($manage_home)
+  
+  validate_string($owner)
+  validate_string($group)
+  
+  # validate_array($home)
+
+  validate_string($base_url)
+  validate_string($version)
+  validate_string($checksum)
+  validate_string($checksum_type)
+  validate_string($configuration_directory)
+  validate_string($installation_directory)
+  validate_string($storage_root)
+  validate_string($log_directory)
+  validate_string($listen_ip)
+  validate_integer($listen_port)
+  
+  validate_hash($configuration)
+
+  validate_bool($manage_service)
+  validate_string($service_template)
+  validate_string($service_path)
+  validate_string($service_provider)
+  validate_string($service_mode)
 
   class { '::minio::user': }
   class { '::minio::install': }
